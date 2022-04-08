@@ -1,0 +1,71 @@
+${jsonencode({
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "es:ESHttpDelete",
+        "es:ESHttpGet",
+        "es:ESHttpHead",
+        "es:ESHttpPost",
+        "es:ESHttpPut",
+        "es:ESHttpPatch"
+      ],
+      "Resource": [ for elasticsearch in elasticsearch_arns : "${elasticsearch}/*" ]
+    },
+    {
+      "Sid": "S3ListLegacyBuckets",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::womply-archives",
+        "arn:aws:s3:::womply-reports",
+        "arn:aws:s3:::womply-logs"
+      ],
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": [
+            "${microservice_alias}-${microservice_name}/${env}/*"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "S3ManageLegacyObjects",
+      "Effect": "Allow",
+      "Action": [
+        "s3:DeleteObject",
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:PutObjectAcl"
+      ],
+      "Resource": [
+        "arn:aws:s3:::womply-archives/${microservice_alias}-${microservice_name}/${env}/*",
+        "arn:aws:s3:::womply-logs/${microservice_alias}-${microservice_name}/${env}/*",
+        "arn:aws:s3:::womply-reports/${microservice_alias}-${microservice_name}/${env}/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "sns:Publish"
+      ],
+      "Resource": [ for topic in topic_arns : "${topic}" ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "sqs:ChangeMessageVisibility*",
+        "sqs:DeleteMessage*",
+        "sqs:GetQueue*",
+        "sqs:ListDeadLetterSourceQueues",
+        "sqs:ListQueues",
+        "sqs:ReceiveMessage",
+        "sqs:SendMessage*"
+      ],
+      "Resource": [ for queue in queue_arns : "${queue}" ]
+    }
+  ]
+})}

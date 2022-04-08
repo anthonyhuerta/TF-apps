@@ -1,0 +1,7 @@
+---
+storefront-data:
+  team: app
+  pagerduty_enabled: true
+  slack_channel: alerts-storefront
+  alias: svc46
+

@@ -1,0 +1,53 @@
+---
+customer-engagement:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-email-platform
+  alias: svc37
+  secrets:
+  - AWS_SECRET_ACCESS_KEY
+  - DATABASE_PASSWORD
+  - FACEBOOK_TOKEN
+  redis-sidekiq:
+    instance_type: cache.t3.small
+    version: 5.0.6
+    parameter_version: redis5.0
+  redis-cache:
+    instance_type: cache.t3.small
+    version: 5.0.6
+    parameter_version: redis5.0
+  glue:
+    connections:
+      customer-engagement-service:
+        name: customerengage_db
+        engine: postgresql
+        host: psql-customerengage-beta.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        port: 5432
+        availability_zone: us-west-2c
+    crawlers:
+      datalake-customer-engagement-service:
+        connection_name: customer-engagement-service
+        include_path: customerengage_db
+        exclude_paths: []
+        trigger: 'cron(00 05 * * ? *)'
+    jobs:
+      customer-engagement-service:
+        connection_name: customer-engagement-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/beta/customer_engagement_service.py
+        python_version: 3
+        worker_type: Standard
+        number_of_workers: 10
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/beta/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.maxAppAttempts=1"
+    triggers:
+      customer-engagement-service:
+        type: ON_DEMAND
+        schedule: null
+        actions:
+        - job_name: customer-engagement-service

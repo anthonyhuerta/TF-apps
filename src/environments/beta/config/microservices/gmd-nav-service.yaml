@@ -1,0 +1,22 @@
+---
+gmd-nav:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-apps-platform
+  alias: app00
+  secrets:
+  - CRYPT_KEY
+  - DB_PASSWORD_CRYPT
+  - LOGGLY_TOKEN
+  - USER_SERVICE_API_TOKEN
+  postgres:
+    index: 1
+    name: 'gmdnav_db'
+    family: 'postgres12'
+    version: '12.7'
+    instance_class: 'db.t2.small'
+    storage: 10
+    apply_immediately: true
+    storage_encrypted: true
+    performance_insights: true
+    backup_period: 7

@@ -1,0 +1,18 @@
+datadog:
+  secrets_with_details:
+    /apps/datadog/datadog-api-key:
+      description: Datadog API Key for infra app Datadog
+      additional_tags:
+        Kubernetes:Kind: ExternalSecret
+    /apps/datadog/datadog-app-key:
+      description: Datadog Aplication Key for infra app Datadog
+      additional_tags:
+        Kubernetes:Kind: ExternalSecret
+    /apps/datadog/datadog-cluster-agent:
+      description: Randomly pre-generated token for infra app Datadog
+      additional_tags:
+       Kubernetes:Kind: ExternalSecret
+    /apps/datadog/rds/postgres/db-password:
+      description: RDS db password for datadog user to monitor postgres metrics
+      additional_tags: 
+        Kubernetes:Kind: ExternalSecret

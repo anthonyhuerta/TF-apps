@@ -1,0 +1,14 @@
+---
+bizinfo-search:
+  team: app
+  slack_channel: alerts-ngi
+  alias: svc48
+  elasticsearch:
+    instance_type: "t3.small.elasticsearch"
+  topics:
+    names:
+    - prefix-soa-business-info-updated
+    filters: '{"X-Womply-EventType": ["StorefrontSync"]}'
+  secrets:
+  - FUNNEL_SERVICE_API_TOKEN
+  - STOREFRONT_DATA_SERVICE_API_TOKEN

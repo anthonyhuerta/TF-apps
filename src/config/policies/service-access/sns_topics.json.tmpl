@@ -1,0 +1,56 @@
+${jsonencode({
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Default",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "*"
+      },
+      "Action": [
+        "SNS:AddPermission",
+        "SNS:DeleteTopic",
+        "SNS:GetTopicAttributes",
+        "SNS:ListSubscriptionsByTopic",
+        "SNS:Publish",
+        "SNS:Receive",
+        "SNS:RemovePermission",
+        "SNS:SetTopicAttributes",
+        "SNS:Subscribe"
+      ],
+      "Resource": "${resource_arn}",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceOwner": "${account_id}"
+        }
+      }
+    },
+    {
+      "Sid": "CrossAccountPublish",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": [
+          "arn:aws:iam::754841671700:root",
+          "arn:aws:iam::985433556411:root"
+        ]
+      },
+      "Action": "SNS:Publish",
+      "Resource": "${resource_arn}"
+    },
+    {
+      "Sid": "S3PutBucketNotification",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "s3.amazonaws.com"
+      },
+      "Action": "SNS:Publish",
+      "Resource": "${resource_arn}",
+      "Condition": {
+        "ArnLike": {
+          "AWS:SourceArn": [for bucket_name in allowed_publishers_s3_buckets : "arn:aws:s3:::${bucket_name}"]
+        }
+      }
+    }
+  ]
+}
+)}

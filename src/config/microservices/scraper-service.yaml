@@ -1,0 +1,8 @@
+---
+scraper:
+  team: app
+  slack_channel: alerts-ngi
+  alias: svc7
+  topics:
+    names:
+    - prefix-soa-scraping-page-failed

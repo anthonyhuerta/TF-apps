@@ -1,0 +1,81 @@
+---
+user:
+  team: data-platform
+  pagerduty_enabled: false
+  slack_channel: alerts-apps-platform
+  alias: svc22
+  glue:
+    connections:
+      user-service:
+        availability_zone: us-west-2b
+        engine: postgresql
+        port: 5432
+        host: "prod-svc22-postgres.ctcscgdmwqwe.us-west-2.rds.amazonaws.com"
+        name: service
+      user-service-delta:
+        availability_zone: us-west-2b
+        engine: postgresql
+        port: 5432
+        host: "prod-svc22-postgres.ctcscgdmwqwe.us-west-2.rds.amazonaws.com"
+        name: service
+    crawlers:
+      datalake-user-service:
+        connection_name: user-service
+        include_path: service
+        exclude_paths: ['schema_version**']
+        trigger: 'cron(*/15 * * * ? *)'
+      datalake-user-service-delta:
+        connection_name: user-service-delta
+        include_path: service
+        exclude_paths: ['schema_version**']
+        trigger: 'cron(*/15 * * * ? *)'
+    jobs:
+      user-service:
+        connection_name: user-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/prod/user_service.py
+        python_version: 3
+        number_of_workers: 20
+        worker_type: 'G.2X'
+        default_arguments:
+          --TempDir: s3://womply-datalake-glue-working/prod
+          --conf: "spark.yarn.maxAppAttempts=1"
+          --extra-py-files: s3://womply-datalake-scripts/prod/datalake-common-lib.zip
+          --job-language: python
+          --womply_env: prod
+          --database_name: glue-catalog-database
+      user-service-delta:
+        connection_name: user-service-delta
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/prod/user_service_delta.py
+        python_version: 3
+        number_of_workers: 4
+        worker_type: Standard
+        default_arguments:
+          --TempDir: s3://womply-datalake-glue-working/prod/
+          --conf: "spark.yarn.maxAppAttempts=1"
+          --extra-py-files: s3://womply-datalake-scripts/prod/datalake-common-lib.zip
+          --job-language: python
+          --womply_env: prod
+          --database_name: glue-catalog-database
+    triggers:
+      user-service:
+        type: CONDITIONAL
+        schedule: null
+        actions:
+        - job_name: user-service
+        predicate:
+        - conditions:
+          - crawler_name: datalake-user-service
+            crawler_state: SUCCEEDED
+            logical_operator: EQUALS
+      user-service-job-scheduled:
+        type: SCHEDULED
+        schedule: 'cron(30 07 * * ? *)'
+        actions:
+          - job_name: user-service
+      user-service-delta:
+        type: ON_DEMAND
+        schedule: null
+        actions:
+        - job_name: user-service-delta

@@ -1,0 +1,8 @@
+---
+webhook-handler:
+  team: data-platform
+  pagerduty_enabled: false
+  slack_channel: alerts-ngi
+  alias: app44
+  secrets:
+  - PERSONA_SIGNATURE_KEY

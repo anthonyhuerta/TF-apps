@@ -1,0 +1,19 @@
+${jsonencode({
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AthenaQueryAccess",
+      "Effect": "Allow",
+      "Action": [
+        "athena:BatchGet*",
+        "athena:CreateNamedQuery",
+        "athena:DeleteNamedQuery",
+        "athena:Get*",
+        "athena:List*",
+        "athena:StartQueryExecution",
+        "athena:StopQueryExecution"
+      ],
+      "Resource": distinct(sort([for query in queries : trimspace(query)]))
+    }
+  ]
+})}

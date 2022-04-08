@@ -1,0 +1,36 @@
+---
+file-transfer:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-ngi
+  alias: svc51
+  secrets:
+  - DB_PASSWORD_CRYPT
+  postgres:
+    index: 1
+    family: 'postgres12'
+    version: '12.5'
+    instance_class: 'db.t2.small'
+    storage: 10
+    apply_immediately: true
+    storage_encrypted: false
+    backup_period: 7
+    # Available values for RDS monitor override
+    # Note: All these values are default values.
+    monitoring:
+      critical:
+        slack_channel: alerts-infra-critical
+        cpu_threshold: 90
+        free_memory_threshold: 265000000
+        read_latency_threshold: "0.005"
+        replication_lag_threshold: 240
+        storage_threshold: 90
+        write_latency_threshold: "0.3"
+      warning:
+        slack_channel: alerts-infra-warning
+        cpu_threshold: 80
+        free_memory_threshold: 305000000
+        read_latency_threshold: "0.004"
+        replication_lag_threshold: 180
+        storage_threshold: 80
+        write_latency_threshold: "0.2"

@@ -1,0 +1,51 @@
+---
+affiliate-marketing:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-apps-platform
+  alias: app42
+  secrets:
+  - DB_PASSWORD_CRYPT
+  - FIREBASE_API_KEY
+  - FUNDROCKET_SERVICE_API_TOKEN
+  - JENKINS_API_TOKEN
+  - KICKBOX_KEY
+  - SAASQUATCH_API_TOKEN
+  - SENDGRID_READONLY_API_KEY
+  - SIGNUP_SERVICE_API_TOKEN
+  - WOMPLY_PAY_SERVICE_API_TOKEN
+  glue:
+    connections:
+      affiliate-marketing-service:
+        availability_zone: us-west-2c
+        engine: postgresql
+        port: 5432
+        host: psql-affiliatemarketing-prod.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        name: service
+    crawlers:
+      datalake-affiliate-marketing-service:
+        connection_name: affiliate-marketing-service
+        exclude_paths: []
+        include_path: service
+        trigger: 'cron(30 07 * * ? *)'
+    jobs:
+      affiliate-marketing-service:
+        connection_name: affiliate-marketing-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/prod/affiliate_marketing_service.py
+        python_version: 3
+        number_of_workers: 10
+        worker_type: 'G.1X'
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/prod/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/prod
+          --job-language: python
+          --womply_env: prod
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.maxAppAttempts=1"
+    triggers:
+      affiliate-marketing-service:
+        type: SCHEDULED
+        schedule: 'cron(30 15 * * ? *)'
+        actions:
+        - job_name: affiliate-marketing-service

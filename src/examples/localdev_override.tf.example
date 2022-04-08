@@ -1,0 +1,39 @@
+#####
+# Providers - include NO MORE THAN ONE of the following
+#####
+
+# Assume a role
+provider "aws" {
+  region = var.region
+
+  # Prevent using master account
+  forbidden_account_ids = ["985433556411"]
+
+  assume_role {
+    role_arn = "arn:aws:iam::639015794711:role/FullAdmin-womply"
+  }
+}
+
+# Reference a specific profile in ~/.aws/credentials
+provider "aws" {
+  region = var.region
+
+  # Prevent using master account
+  forbidden_account_ids = ["985433556411"]
+
+  profile = "YOUR_PROFILE"
+}
+
+#####
+# Locals
+#####
+
+locals {
+  account_ids = {
+    beta       = data.terraform_remote_state.master_org.outputs.beta_account_id
+    prod       = data.terraform_remote_state.master_org.outputs.prod_account_id
+    YOUR_NAME  = "639015794711"
+    legacy     = "985433556411"
+    fundrocket = "754841671700"
+  }
+}

@@ -1,0 +1,19 @@
+---
+segment-proxy:
+  aliases:
+  - segment.womply.com
+  acm_cert_domain_name: "womply.com"
+  origins:
+  - domain_name: api.segment.io
+    origin_id: segment-api # Identifer for linking origin destination to the behavoir
+  - domain_name: cdn.segment.com
+    origin_id: segment-cdn
+  default_cache_behavior:
+    target_origin_id: segment-api
+  ordered_cache_behavior:
+  - target_origin_id: segment-cdn
+    path_pattern: "/analytics*"
+  - target_origin_id: segment-cdn
+    path_pattern: "*/settings"
+  - target_origin_id: segment-cdn
+    path_pattern: "/next-integrations*"

@@ -1,0 +1,34 @@
+---
+instagram-image-proxy:
+  aliases:
+  - imageproxy.womply.com
+  acm_cert_domain_name: "womply.com"
+  origins:
+  - domain_name: api.segment.io
+    origin_id: new-api.segment # Identifer for linking origin destination to the behavoir
+    origin_protocol_policy: match-viewer
+    origin_ssl_protocols: ["TLSv1", "TLSv1.1", "TLSv1.2"]
+  default_cache_behavior:
+    target_origin_id: new-api.segment
+    allowed_methods: ["GET", "HEAD"]
+    viewer_protocol_policy: allow-all
+  lambda_function_association_default:
+    instagram-proxy:
+      event_type: origin-request
+      type: zip
+      file_name: instagram_image_proxy
+      source_file: config/files/instagram_image_proxy.js
+      output_path: instagram_image.zip
+      include_body: false
+      handler: instagram_image_proxy.handler
+      runtime: nodejs12.x
+      publish: true
+    instagram-cross-origin:
+      event_type: origin-response
+      type: zip
+      source_file: config/files/cloudfront_set_cross_origin_resource.js
+      output_path: set_instagram_cross_origin_policy.zip
+      include_body: false
+      handler: cloudfront_set_cross_origin_resource.handler
+      runtime: nodejs12.x
+      publish: true

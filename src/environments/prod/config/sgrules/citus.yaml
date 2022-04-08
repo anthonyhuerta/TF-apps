@@ -1,0 +1,49 @@
+---
+# The ingress rule must have any one of the parameter set: source_security_group_id, cidr_block or self
+ecs-citus-connection:
+  from_port: 5432
+  protocol: tcp
+  security_group_id: citus
+  source_security_group_id: ecs-prod-cluster
+  to_port: 5434
+  type: ingress
+
+eks-citus-connection:
+  from_port: 5432
+  protocol: tcp
+  security_group_id: citus
+  source_security_group_id: eks-cluster
+  to_port: 5434
+  type: ingress
+
+eks-citus-ssh:
+  from_port: 22
+  protocol: tcp
+  security_group_id: citus
+  source_security_group_id: eks-cluster
+  to_port: 22
+  type: ingress
+
+openvpn-citus-connection:
+  from_port: 5432
+  protocol: tcp
+  security_group_id: citus
+  source_security_group_id: legacy-vpn
+  to_port: 5434
+  type: ingress
+
+openvpn-citus-ssh:
+  from_port: 22
+  protocol: tcp
+  security_group_id: citus
+  source_security_group_id: legacy-vpn
+  to_port: 22
+  type: ingress
+
+self-citus-all:
+  from_port: 0
+  protocol: -1
+  security_group_id: citus
+  self: true
+  to_port: 0
+  type: ingress

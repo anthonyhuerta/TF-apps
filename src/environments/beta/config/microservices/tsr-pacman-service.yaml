@@ -1,0 +1,56 @@
+---
+tsr-pacman:
+  team: data-platform
+  pagerduty_enabled: false
+  slack_channel: alerts-payments-data
+  alias: app27
+  secrets:
+  - DB_USER_PW
+  - REDSHIFT_PASSWORD
+  - SECRET_KEY_BASE
+  glue:
+    connections:
+      tsr-pacman-service:
+        availability_zone: us-west-2b
+        engine: postgresql
+        port: 5432
+        host: tsr-pacman-service-postgres.beta-internal.com
+        name: txanalysis
+    crawlers:
+      datalake-tsr-pacman-service:
+        connection_name: tsr-pacman-service
+        include_path: txanalysis
+        exclude_paths: []
+        trigger: null
+    jobs:
+      tsr-pacman-service:
+        connection_name: tsr-pacman-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/beta/tsr_pacman.py
+        python_version: 3
+        number_of_workers: 10
+        worker_type: Standard
+        default_arguments:
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --conf: "spark.yarn.maxAppAttempts=1"
+          --extra-py-files: s3://womply-datalake-scripts/beta/datalake-common-lib.zip
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+    triggers:
+      tsr-pacman-service:
+        type: ON_DEMAND
+        schedule: null
+        actions:
+        - job_name: tsr-pacman-service
+  postgres:
+    index: 1
+    name: txanalysis
+    family: 'postgres11'
+    version: '11.12'
+    instance_class: 'db.t3.small'
+    storage: 80
+    apply_immediately: true
+    storage_encrypted: true
+    performance_insights: true
+    backup_period: 7

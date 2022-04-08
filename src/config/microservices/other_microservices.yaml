@@ -1,0 +1,67 @@
+---
+customer-engagement:
+  team: app
+  slack_channel: alerts-email-platform
+  alias: svc37
+  redis-sidekiq:
+    instance_type: cache.t3.small
+    version: 5.0.6
+    parameter_version: redis5.0
+
+funnel:
+  team: app
+  slack_channel: alerts-ngi
+  alias: app37
+  topics:
+    names:
+    - prefix-soa-business-info-updated
+    filters: '{"X-Womply-EventType": [{"anything-but": ["StorefrontSync"]}]}'
+
+fundrocket-web:
+  team: fin
+  slack_channel: alerts-ngi
+  alias: app43
+  topics:
+    names:
+    - prefix-soa-payment-transactions
+
+platform-sandbox:
+  team: infra
+  slack_channel: alerts-ngi
+  alias: app34
+
+sbo-creds:
+  team: app
+  slack_channel: alerts-ngi
+  alias: svc42
+  redis-sidekiq:
+    instance_type: cache.t3.small
+    version: 5.0.6
+    parameter_version: redis5.0
+
+storefront-data:
+  team: app
+  slack_channel: alerts-ngi
+  alias: svc46
+
+transaction:
+  team: app
+  slack_channel: alerts-ngi
+  alias: svc45
+  citus:
+    name: transaction-citus
+    instance_count: 0
+    use_num_suffix: true
+    ami: ami-0155c31ea13d4abd2 # CentOS Linux 8 x86_64 - release 8.3.2011
+    instance_type: i3en.2xlarge
+    root_block_device:
+      delete_on_termination: true
+      volume_size: 20
+
+womply-pay:
+  team: app
+  slack_channel: alerts-ngi
+  alias: app39
+  topics:
+    names:
+    - prefix-soa-payment-settlements

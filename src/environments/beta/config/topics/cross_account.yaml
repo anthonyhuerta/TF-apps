@@ -1,0 +1,10 @@
+---
+s3-events-vault-file-service:
+  allowed_publishers:
+    s3_buckets:
+    - womply-preprod-file-vault
+
+s3-events-scraper-service:
+  allowed_publishers:
+    s3_buckets:
+    - womply-archives

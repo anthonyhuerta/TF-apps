@@ -1,0 +1,45 @@
+---
+sbo-creds:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-connections
+  alias: svc42
+  redis-sidekiq:
+    instance_type: cache.t3.small
+    version: 5.0.6
+    parameter_version: redis5.0
+  glue:
+    connections:
+      sbo-creds-service:
+        availability_zone: us-west-2c
+        engine: postgresql
+        port: 5432
+        host: db-sbocredsservice-preprod.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        name: service
+    crawlers:
+      datalake-sbo-creds-service:
+        connection_name: sbo-creds-service
+        include_path: service
+        exclude_path: []
+        trigger: 'cron(10 11 * * ? *)'
+    jobs:
+      sbo-creds-service:
+        connection_name: sbo-creds-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/beta/sbo_creds_service.py
+        python_version: 3
+        number_of_workers: 10
+        worker_type: Standard
+        default_arguments:
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --conf: "spark.yarn.maxAppAttempts=1"
+          --extra-py-files: s3://womply-datalake-scripts/beta/datalake-common-lib.zip
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+    triggers:
+      sbo-creds-service:
+        type: ON_DEMAND
+        schedule: null
+        actions:
+        - job_name: sbo-creds-service

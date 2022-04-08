@@ -1,0 +1,11 @@
+---
+control-center:
+  team: app
+# pagerduty will be enable when svc is stable.
+  pagerduty_enabled: false
+  slack_channel: alerts-ngi
+  alias: app17
+  secrets:
+  - DATABASE_PASSWORD
+  - INSIGHTS_SERVICE_TOKEN
+  - LOGGLY_TOKEN

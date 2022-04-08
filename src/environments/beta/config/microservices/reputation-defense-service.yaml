@@ -1,0 +1,41 @@
+---
+reputation-defense:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-storefront
+  alias: app12
+  glue:
+    connections:
+      reputation-defense-service:
+        name: service
+        engine: postgresql
+        host: preprod-app12.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        port: 5432
+        availability_zone: us-west-2a
+    crawlers:
+      datalake-reputation-defense-service:
+        connection_name: reputation-defense-service
+        include_path: service
+        exclude_paths: []
+        trigger: 'cron(30 08 * * ? *)'
+    jobs:
+      reputation-defense-service:
+        connection_name: reputation-defense-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/beta/reputation_defense_service.py
+        python_version: 3
+        worker_type: Standard
+        number_of_workers: 10
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/beta/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.maxAppAttempts=1"
+    triggers:
+      reputation-defense-service:
+        type: ON_DEMAND
+        schedule: null
+        actions:
+        - job_name: reputation-defense-service

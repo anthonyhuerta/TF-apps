@@ -1,0 +1,16 @@
+---
+transaction:
+  team: app
+  pagerduty_enable: false
+  slack_channel: alerts-ngi
+  alias: svc45
+  citus:
+    name: transaction-citus
+    instance_count: 0
+    use_num_suffix: true
+    ami: ami-0155c31ea13d4abd2 # CentOS Linux 8 x86_64 - release 8.3.2011
+    instance_type: i3en.6xlarge
+    root_block_device:
+      delete_on_termination: true
+      volume_size: 50
+

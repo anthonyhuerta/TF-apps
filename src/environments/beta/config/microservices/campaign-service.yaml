@@ -1,0 +1,41 @@
+---
+campaign:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-apps-platform
+  alias: app26
+  glue:
+    connections:
+      campaign-service:
+        name: campaign_db
+        engine: postgresql
+        host: psql-campaign-beta.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        port: 5432
+        availability_zone: us-west-2a
+    crawlers:
+      datalake-campaign-service:
+        connection_name: campaign-service
+        include_path: campaign_db
+        exclude_paths: []
+        trigger: 'cron(00 06 * * ? *)'
+    jobs:
+      campaign-service:
+        connection_name: campaign-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/beta/campaign_service.py
+        python_version: 3
+        worker_type: Standard
+        number_of_workers: 10
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/beta/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.maxAppAttempts=1"
+    triggers:
+      campaign-service:
+        type: ON_DEMAND
+        schedule: null
+        actions:
+        - job_name: campaign-service

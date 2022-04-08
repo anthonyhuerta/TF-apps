@@ -1,0 +1,6 @@
+---
+platform-sandbox:
+  team: api-platform
+  pagerduty_enabled: false
+  slack_channel: alerts-api
+  alias: app34

@@ -1,0 +1,9 @@
+---
+sba-integration:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: proj-womply-fin-systems-integration
+  alias: svc49
+  secrets:
+  - DB_ENCRYPTION_KEY
+  - DB_PASSWORD_CRYPT

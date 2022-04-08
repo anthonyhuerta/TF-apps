@@ -1,0 +1,39 @@
+---
+transaction-etl:
+  team: data-platform
+  pagerduty_enabled: false
+  slack_channel: alerts-payments-data
+  alias: svc9
+  extra-policies:
+    s3-txn-etl-read-write:
+      description: Grants transaction-etl-service read-write access to required s3 buckets
+      policy_template: s3_read_write.json.tmpl
+      params:
+        read_write_bucket_paths:
+        - womply-txn-parquet/beta/feed_transactions/*
+        - womply-archives/ccpm-service/beta/*
+        - womply-archives/svc9-transaction-etl-service/beta/*
+        - womply-archives/svc14-mid-service/beta/*
+        read_only_bucket_paths:
+        - womply-external-partners/0093/to_womply/transaction_settlement_report/*
+        - womply-testing-txn-etl-svc/etl-secrets/*
+        - womply-txn-parquet/beta/feed_transactions/*
+        - womply-archives/ccpm-service/beta/*
+        - womply-archives/svc9-transaction-etl-service/beta/*
+        - womply-archives/svc14-mid-service/beta/*
+  secrets:
+  - AWS_WOMPLY_SECRET_ACCESS_KEY
+  - AWS_SECRET_ACCESS_KEY
+  - POSTGRES_PASSWORD
+  - REDSHIFT_PASSWORD
+  postgres:
+    index: 1
+    name: service
+    family: 'postgres12'
+    version: '12.7'
+    instance_class: 'db.t3.small'
+    storage: 10
+    apply_immediately: true
+    storage_encrypted: true
+    performance_insights: true
+    backup_period: 7

@@ -1,0 +1,10 @@
+---
+s3-events-vault-file-service:
+  allowed_publishers:
+    s3_buckets:
+    - vault-file-service-production
+
+s3-events-scraper-service:
+  allowed_publishers:
+    s3_buckets:
+    - womply-external-partners

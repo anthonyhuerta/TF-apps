@@ -1,0 +1,20 @@
+---
+bizinfo-search:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-storefront
+  alias: svc48
+  elasticsearch:
+    clusters:
+    - '1'
+  queues:
+    medium:
+      age_critical: 5400  # 90 minutes
+      size_critical: 10000
+  topics:
+    names:
+    - soa-business-info-updated
+    filters: '{"X-Womply-EventType": ["StorefrontSync"]}'
+  secrets:
+  - FUNNEL_SERVICE_API_TOKEN
+  - STOREFRONT_DATA_SERVICE_API_TOKEN

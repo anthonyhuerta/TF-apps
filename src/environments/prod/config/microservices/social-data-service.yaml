@@ -1,0 +1,41 @@
+---
+social-data:
+  team: data-platform
+  pagerduty_enabled: false
+  slack_channel: sds-status
+  alias: svc6
+  glue:
+    connections:
+      social-data-service:
+        name: socialdata_db
+        engine: postgresql
+        host: psql-socialdataslave-prod-green.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        port: 5432
+        availability_zone: us-west-2a
+    crawlers:
+      datalake-social-data-service:
+        connection_name: social-data-service
+        include_path: socialdata_db
+        exclude_paths: ['schema_version\\\*\\\*\*\***']
+        trigger: 'cron(30 6 * * ? *)'
+    jobs:
+      social-data-service-profiles:
+        connection_name: social-data-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/prod/social_data_profiles.py
+        python_version: 3
+        number_of_workers: 20
+        worker_type: Standard
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/prod/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/prod
+          --job-language: python
+          --womply_env: prod
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.executor.memoryOverhead=7168"
+    triggers:
+      social-data-service:
+        type: SCHEDULED
+        schedule: 'cron(00 07 * * ? *)'
+        actions:
+        - job_name: social-data-service-profiles

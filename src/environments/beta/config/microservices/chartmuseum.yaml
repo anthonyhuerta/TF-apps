@@ -1,0 +1,6 @@
+chartmuseum:
+  secrets_with_details:
+    /apps/chartmuseum/AUTH_CONFIG:
+      description: json dict containing chartmuseum credentials for cluster 'main'
+      additional_tags: 
+        Kubernetes:Kind: ExternalSecret

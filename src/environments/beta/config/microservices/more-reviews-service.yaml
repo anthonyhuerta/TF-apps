@@ -1,0 +1,41 @@
+---
+more-reviews:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-storefront
+  alias: app19
+  glue:
+    connections:
+      more-reviews-service:
+        name: morereviews_db
+        engine: postgresql
+        host: psql-morereviews-beta.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        port: 5432
+        availability_zone: us-west-2c
+    crawlers:
+      datalake-more-reviews-service:
+        connection_name: more-reviews-service
+        include_path: morereviews_db
+        exclude_paths: []
+        trigger: 'cron(00 06 * * ? *)'
+    jobs:
+      more-reviews-service:
+        connection_name: more-reviews-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/beta/more_reviews_service.py
+        python_version: 3
+        worker_type: Standard
+        number_of_workers: 10
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/beta/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.maxAppAttempts=1"
+    triggers:
+      more-reviews-service:
+        type: ON_DEMAND
+        schedule: null
+        actions:
+        - job_name: more-reviews-service

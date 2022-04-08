@@ -1,0 +1,48 @@
+---
+signup:
+  team: app
+  slack_channel: alerts-apps-platform
+  alias: app10
+  amq:
+    auto_minor_version_upgrade: true
+    configuration: config/files/activemq.xml
+    deployment_mode: SINGLE_INSTANCE
+    engine_type: ActiveMQ
+    engine_version: 5.15.15
+    host_instance_type: mq.m5.large
+    name: signup-activemq
+  glue:
+    connections:
+      signup-service:
+        availability_zone: us-west-2b
+        engine: postgresql
+        port: 5432
+        host: preprod-app10-postgres.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        name: service
+    crawlers:
+      datalake-signup-service:
+        connection_name: signup-service
+        include_path: service
+        exclude_paths: []
+        trigger: null
+    jobs:
+      signup-service:
+        connection_name: signup-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/beta/signup_service.py
+        python_version: 3
+        number_of_workers: 10
+        worker_type: Standard
+        default_arguments:
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --conf: "spark.yarn.maxAppAttempts=1"
+          --extra-py-files: s3://womply-datalake-scripts/beta/datalake-common-lib.zip
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+    triggers:
+      signup-service:
+        type: ON_DEMAND
+        schedule: null
+        actions:
+        - job_name: signup-service

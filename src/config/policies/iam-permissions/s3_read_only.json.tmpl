@@ -1,0 +1,21 @@
+${jsonencode({
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ListBuckets",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket"
+      ],
+      "Resource": distinct(sort([for bucket_path in read_only_bucket_paths : "arn:aws:s3:::${split("/", trimprefix(bucket_path, "s3://"))[0]}"]))
+    },
+    {
+      "Sid": "GetObjects",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject"
+      ],
+      "Resource": sort([for bucket_path in read_only_bucket_paths : "arn:aws:s3:::${trimprefix(bucket_path, "s3://")}"])
+    }
+  ]
+})}

@@ -1,0 +1,45 @@
+---
+bank-account:
+  team: data-platform
+  pagerduty_enabled: false
+  slack_channel: alerts-womply-pay
+  alias: app29
+  glue:
+    connections:
+      bank-account-service:
+        name: bank_account_db
+        engine: postgresql
+        host: psql-bank-account-testing.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        port: 5432
+        availability_zone: us-west-2b
+    crawlers:
+      datalake-bank-account-service:
+        connection_name: bank-account-service
+        include_path: bank_account_db
+        exclude_paths: []
+        trigger: 'cron(00 10 * * ? *)'
+    jobs:
+      bank-account-service:
+        connection_name: bank-account-service
+        glue_version: '3.0'
+        script_location: s3://womply-datalake-scripts/beta/bank_account_service.py
+        python_version: 3
+        worker_type: Standard
+        number_of_workers: 10
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/beta/python-shell-scripts/Data_Validation.zip,s3://womply-datalake-scripts/beta/python-shell-scripts/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.maxAppAttempts=1"
+          --db_user: datalakebeta
+          --additional-python-modules: psycopg2-binary==2.8.5
+          --python-modules-installer-option: --upgrade
+          --db_password_secret_id: "/apps/glue/jobs/shared/DB_PASSWORD"
+    triggers:
+      bank-account-service:
+        type: ON_DEMAND
+        schedule: null
+        actions:
+        - job_name: bank-account-service

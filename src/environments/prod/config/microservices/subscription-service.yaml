@@ -1,0 +1,22 @@
+---
+subscription:
+  team: app
+  pagerduty_enabled: true
+  slack_channel: alerts-apps-platform
+  alias: svc39
+  secrets:
+  - CAMPAIGN_SERVICE_API_TOKEN
+  - DB_PASSWORD_CRYPT
+  - LOGGLY_TOKEN
+  - USER_SERVICE_TOKEN
+  postgres:
+    index: 1
+    name: 'subscription_db'
+    family: 'postgres12'
+    version: '12.7'
+    instance_class: 'db.m3.medium'
+    storage: 10
+    apply_immediately: true
+    storage_encrypted: true
+    performance_insights: true
+    backup_period: 7

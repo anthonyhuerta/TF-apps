@@ -1,0 +1,41 @@
+---
+partner:
+  team: data-platform
+  pagerduty_enabled: false
+  slack_channel: alerts-payments-data
+  alias: svc30
+  glue:
+    connections:
+      partner-service:
+        name: partner_db
+        engine: postgresql
+        host: psql-partner-testing.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        port: 5432
+        availability_zone: us-west-2a
+    crawlers:
+      datalake-partner-service:
+        connection_name: partner-service
+        include_path: partner_db
+        exclude_paths: []
+        trigger: 'cron(00 11 * * ? *)'
+    jobs:
+      partner-service:
+        connection_name: partner-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/beta/partner_service.py
+        python_version: 3
+        worker_type: Standard
+        number_of_workers: 10
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/beta/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.maxAppAttempts=1"
+    triggers:
+      partner-service:
+        type: ON_DEMAND
+        schedule: null
+        actions:
+        - job_name: partner-service

@@ -1,0 +1,52 @@
+${jsonencode({
+  "Version": "2012-10-17",
+  "Id": "CustomerManagedKMSReadWritePolicy",
+  "Statement": [
+    {
+        "Sid": "Allow Administrative IAM policies",
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": "arn:aws:iam::${account_id}:root"
+        }
+        "Action": "kms:*",
+        "Resource": "*"
+    },
+    {
+      "Sid": "Allow use of the key",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": [ for name in params.kms_read_only_access: "arn:aws:iam::${account_id}:role/${name}"]
+      },
+      "Action": [
+        "kms:Encrypt",
+        "kms:Decrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey"
+      ],
+      "Resource": "*"
+    },
+    {
+        "Sid": "Allow access through AWS ${aws_resource_name} for all principals in the account that are authorized to use AWS ${aws_resource_name}",
+        "Effect": "Allow",
+        "Principal": {
+            "AWS": "*",
+        }
+        "Action": [
+            "kms:Encrypt",
+            "kms:Decrypt",
+            "kms:ReEncrypt*",
+            "kms:GenerateDataKey*",
+            "kms:CreateGrant",
+            "kms:DescribeKey"
+        ],
+        "Resource": "*",
+        "Condition": {
+            "StringEquals": {
+                "kms:ViaService": "${aws_resource_name}.${region}.amazonaws.com",
+                "kms:CallerAccount": "${account_id}"
+            }
+        }
+    }
+  ]
+})}

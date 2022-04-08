@@ -1,0 +1,21 @@
+${jsonencode({
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "EditRecordSets",
+      "Effect": read_write_statement_effect,
+      "Action": "route53:ChangeResourceRecordSets",
+      "Resource": distinct(sort([for zone_id in read_write_hosted_zone_ids : "arn:aws:route53:::hostedzone/${zone_id}"]))
+    },
+    {
+      "Sid": "ListRecordSets",
+      "Effect": "Allow",
+      "Action": [
+        "route53:ListTagsForResource",
+        "route53:ListResourceRecordSets",
+        "route53:ListHostedZones"
+      ],
+       "Resource": "*"
+    }
+  ]
+})}

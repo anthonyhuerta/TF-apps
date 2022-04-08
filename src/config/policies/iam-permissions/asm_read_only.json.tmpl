@@ -1,0 +1,18 @@
+${jsonencode({
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ListSecrets",
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetResourcePolicy",
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:ListSecretVersionIds"
+      ],
+      "Resource": distinct(sort([for secret_path in read_only_secrets : "arn:aws:secretsmanager:${region}:${account_id}:secret:${secret_path}"]))
+    }
+  ]
+})}
+
+

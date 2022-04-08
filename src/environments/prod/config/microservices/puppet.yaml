@@ -1,0 +1,12 @@
+puppet:
+  secrets_with_details:
+    /apps/puppet/postgres/ROOT_USER_PASSWORD:
+      description: Postgres DB password of postgres user
+    /apps/puppet/postgres/REPLICA_USER_PASSWORD:
+      description: Postgres DB password of replication user - repmgr
+    /apps/puppet/postgres/SERVICE_USER_PASSWORD:
+      description: Postgres DB password of puppetdb user
+    /apps/puppet/postgres/pgpool/CONSOLE_USER_PASSWORD:
+      description: Pgpool admin user password
+    /apps/puppet/postgres/pgpool/EXTRA_USER_CREDS:
+      description: pgpool_passwd config for puppet db

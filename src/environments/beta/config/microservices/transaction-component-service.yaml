@@ -1,0 +1,9 @@
+---
+transaction-component:
+  team: data-platform
+  pagerduty_enabled: false
+  slack_channel: alerts-payments-data
+  alias: app15
+  secrets:
+  - JENKINS_API_TOKEN
+  - PLATFORM_REAL_SERVICE_API_TOKEN

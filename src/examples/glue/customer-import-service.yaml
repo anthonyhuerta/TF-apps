@@ -1,0 +1,64 @@
+customer-import:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-infra
+  alias: app28
+  glue:
+    connections:
+      customer-import-service:
+        availability_zone: "us-west-2a" # (Optional) Availability zone us-west-2a/b/c Default: us-west-2a
+        engine: postgresql # (Required) Database engine type: postgresql/mysql
+        port: 5432 # (Required) Database port: 5432/3306
+        host_url: 'psql-customerimport-beta.ctcscgdmwqwe.us-west-2.rds.amazonaws.com' # (Required) Database host name to establish the connection
+        name: <DB_NAME> # (Required) Database name
+    crawlers:
+      datalake-customer-import-service:
+        connection_name: customer-import-service # (Required) The glue connection to be used by the crawler.
+        trigger: "cron(0 18 * * ? *)" # (Optional) To trigger the crawler on scheduled time: Default: null
+        include_path: "customerimport_db" # (Optional) This is to specify/override the name of database inorder to collect the database metadata or database/schema to collect the metadata for specific schema: Default: db_name
+        exclude_paths: []
+        table_prefix: null # (Optional) Add table_prefix in crawler. Default is null
+        crawler_lineage_settings: DISABLE # (Optional) Specifies whether data lineage is enabled for the crawler. Default is DISABLE.
+        recrawl_behavior: CRAWL_EVERYTHING # (Optional) Specifies whether to crawl the entire dataset again or to crawl only folders that were added since the last crawler run. Default is CRAWL_EVERYTHING.
+    jobs: # (Required) Glue job specific overrides
+      customer-import-service:
+        connection_name: customer-import-service # (Required) The glue connection to be used by the job.
+        shell_type: pythonshell # (Optional) If shell is 'pythonshell' then `max_capacity` is required value. Default is glueetl.
+        max_capacity: 1 # This variable is only required for `pythonshell`, for any other `shell_type` please remove this and `shell_type` variable instead and use `number_of_workers` and `worker_type`.
+        script_location: "s3://womply-datalake-scripts/beta/<service_name>.py" # (Optional) Default: s3://womply-datalake-scripts/<env>/<microservice_repo_name>.py
+        python_version: "3" # (Optional) `python_version` to be used.
+        timeout: 2880 # (Optional) The job timeout in minutes. Default is 2880.
+        max_retries: 5 # (Optional) The maximum number of times to retry this job if it fails.
+        number_of_workers: 10 # (Optional/Required) number of workers to be assigned. Only if shell_type is not set to pythonshell.
+        worker_type: "G.1X" # (Optional/Required) Type of glue instance to be used available values are: G.1X and G.2X. Only if shell_type is not set to pythonshell.
+        default_arguments: # (Optional) Default argumnets for the glue-job
+          "--extra-files": "s3://womply-datalake-scripts/beta/awswrangler-2.4.0-py3-none-any.whl, s3://womply-datalake-scripts/beta/glue-python-shell-automation/pandas-1.1.5-cp36-cp36m-manylinux1_x86_64.whl,s3://womply-datalake-scripts/beta/awswrangler-2.4.0-py3-none-any.whl,s3://womply-datalake-scripts/beta/glue-python-shell-automation/glue_utils-0.1-py3-none-any.whl" # To add a prerequisites/dependencies for your script
+          "--extra-py-files": "s3://womply-datalake-scripts/beta/datalake-common-lib.zip" # To add `Python lib path` in glue job
+          "--TempDir": "s3://womply-datalake-glue-working/beta/" # To add a temp s3 directory
+          "--job-language": "python" # Job language, Available values are: `python` and `scala`
+          "--womply_env": "beta" # Extra environment variable.
+          "--database_name": glue-catalog-database
+    triggers:
+      customer-import-service-conditional:
+        type: CONDITIONAL # (Required) This is to tell the type of trigger will be created. Available Values: SCHEDULED/CONDITIONAL/ON_DEMAND. Default: ON_DEMAND
+        schedule: null # (Optional) Scheduler for crawlers/Jobs
+        actions: # (Required) Action for this trigger to perform based on trigger type Condition/Schedule/On-demand. Note: Please use either `job_name` or `crawler_name`, using both will result in error.
+        - job_name: customer-import-service
+          # crawler_name: customer-import-service
+        - job_name: affiliate-marketing-service
+        predicate: # (Optional) Used to trigger the action based on the conditions describe in condition section.
+        # Ex:. Based on this condition, if Crawler with name `datalake-subscription-service` and job with name `subscription-service` result in Success then only it will trigger the jobs mentioned in action section.
+        - conditions:
+          - crawler_name: datalake-subscription-service
+            crawler_state: SUCCEEDED
+            logical_operator: EQUALS # (Optional) Operator to be used while evaluating the condition. Default is 'EQUALS'
+          - job_name: subscription-service
+            state: SUCCEEDED
+            logical_operator: EQUALS # (Optional) Operator to be used while evaluating the condition. Default is 'EQUALS'
+          logical: ANY #(Optional) Operator to be used while evaluating all the conditions. Default value is 'AND'.
+      customer-import-service-on-demand:
+        type: ON_DEMAND # (Required) This is to tell the type of trigger will be created. Available Values: SCHEDULED/CONDITIONAL/ON_DEMAND. Default: ON_DEMAND
+        schedule: null # (Optional) Scheduler for crawlers/Jobs
+        actions: # (Required) Action for this trigger to perform based on trigger type Condition/Schedule/On-demand. Note: Please use either `job_name` or `crawler_name`, using both will result in error.
+        - job_name: customer-import-service
+            # crawler_name: datalake-customer-import-service

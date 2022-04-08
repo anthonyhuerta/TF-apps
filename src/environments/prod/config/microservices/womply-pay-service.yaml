@@ -1,0 +1,10 @@
+---
+womply-pay:
+  team: app
+  pagerduty_enabled: true
+  slack_channel: alerts-womply-pay
+  alias: app39
+  topics:
+    names:
+    - soa-payment-settlements
+

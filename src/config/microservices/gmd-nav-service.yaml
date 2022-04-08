@@ -1,0 +1,11 @@
+---
+gmd-nav:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-apps-platform
+  alias: app00
+  secrets:
+  - CRYPT_KEY
+  - DB_PASSWORD_CRYPT
+  - LOGGLY_TOKEN
+  - USER_SERVICE_API_TOKEN

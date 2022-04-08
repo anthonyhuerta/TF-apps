@@ -1,0 +1,21 @@
+---
+data-lakehouse-query:
+  team: data-platform
+  pagerduty_enabled: false
+  slack_channel: alerts-payments-data
+  alias: svc54
+  extra-policies:
+    womply-archives-ach-spark-readonly:
+      description: Grants data-lakehouse-query-service list/read-only access to womply-archives location
+      policy_template: s3_read_list_single_bucket.json.tmpl
+      params:
+        bucket: womply-archives
+        paths:
+        - ach-spark-jobs/beta/delta/*
+  extra-service-accounts:
+  - data-lakehouse-query-service-ray
+  - data-lakehouse-query-service-ray-head
+  - data-lakehouse-query-service-ray-redis
+  - data-lakehouse-query-service-ray-worker
+  secrets:
+  - RAY_REDIS_PASSWORD

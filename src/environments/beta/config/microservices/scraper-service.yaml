@@ -1,0 +1,9 @@
+---
+scraper:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-ngi
+  alias: svc7
+  topics:
+    names:
+    - s3-events-scraper-service

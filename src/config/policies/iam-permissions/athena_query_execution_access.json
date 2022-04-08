@@ -1,0 +1,52 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "QueryDataAndMetadataViaAthena",
+      "Action": [
+        "athena:BatchGetNamedQuery",
+        "athena:BatchGetQueryExecution",
+        "athena:CreateNamedQuery",
+        "athena:DeleteNamedQuery",
+        "athena:GetDataCatalog",
+        "athena:GetDatabase",
+        "athena:GetNamedQuery",
+        "athena:GetQueryExecution",
+        "athena:GetQueryResults",
+        "athena:GetQueryResultsStream",
+        "athena:GetTableMetadata",
+        "athena:GetWorkGroup",
+        "athena:ListDataCatalogs",
+        "athena:ListDatabases",
+        "athena:ListNamedQueries",
+        "athena:ListQueryExecutions",
+        "athena:ListTableMetadata",
+        "athena:ListTagsForResource",
+        "athena:ListWorkGroups",
+        "athena:StartQueryExecution",
+        "athena:StopQueryExecution",
+        "glue:GetDatabase",
+        "glue:GetDatabases",
+        "glue:GetTable",
+        "glue:GetTables"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetBucketLocation",
+        "s3:GetObject",
+        "s3:ListBucket",
+        "s3:ListBucketMultipartUploads",
+        "s3:ListMultipartUploadParts",
+        "s3:AbortMultipartUpload",
+        "s3:PutObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::aws-athena-query-results-*"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+api-auth:
+  team: api-platform
+  pagerduty_enabled: false
+  slack_channel: alerts-api
+  alias: app35
+  secrets:
+    - APIGEE_CLIENT_API_TOKEN
+    - DB_PASSWORD_CRYPT
+    - FUNNEL_SERVICE_TOKEN
+    - LOGGLY_TOKEN
+    - USER_SERVICE_API_KEY
+    - VAULT_FILE_SERVICE_TOKEN
+  glue:
+    connections:
+      api-auth-service:
+        availability_zone: us-west-2c
+        engine: postgresql
+        port: 5432
+        host: api-auth-service-postgres.prod-internal.com
+        name: apiauth_db
+    crawlers:
+      datalake-api-auth-service:
+        connection_name: api-auth-service
+        include_path: apiauth_db
+        exclude_paths: []
+        trigger: 'cron(00 06 * * ? *)'
+    jobs:
+      api-auth-service:
+        connection_name: api-auth-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/prod/api_auth_service.py
+        python_version: '3'
+        number_of_workers: 10
+        worker_type: 'G.1X'
+        default_arguments:
+          --TempDir: s3://womply-datalake-glue-working/prod
+          --conf: "spark.yarn.maxAppAttempts=1"
+          --extra-py-files: s3://womply-datalake-scripts/prod/datalake-common-lib.zip
+          --job-bookmark-option: job-bookmark-disable
+          --job-language: python
+          --womply_env: prod
+          --database_name: glue-catalog-database
+    triggers:
+      api-auth-service:
+        type: SCHEDULED
+        schedule: 'cron(00 07 * * ? *)'
+        actions:
+        - job_name: api-auth-service
+  postgres:
+    index: 1
+    name: "apiauth_db"
+    family: 'postgres11'
+    version: '11.12'
+    instance_class: 'db.t3.medium'
+    storage: 100
+    apply_immediately: true
+    storage_encrypted: true
+    performance_insights: true
+    backup_period: 7

@@ -1,0 +1,113 @@
+---
+social-data:
+  team: data-platform
+  pagerduty_enabled: false
+  slack_channel: sds-status
+  alias: svc6
+  glue:
+    connections:
+      social-data-service:
+        name: socialdata_db
+        engine: postgresql
+        host: psql-socialdatagreen-beta.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        port: 5432
+        availability_zone: us-west-2a
+    crawlers:
+      datalake-social-data-service:
+        connection_name: social-data-service
+        include_path: socialdata_db
+        exclude_paths: []
+        trigger: 'cron(30 6 * * ? *)'
+    jobs:
+      social-data-service-merchant-profiles:
+        connection_name: social-data-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/beta/social_data_merchant_profiles.py
+        python_version: 3
+        number_of_workers: 19
+        worker_type: 'Standard'
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/beta/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+          --db_password_secret_id: "/apps/glue/jobs/shared/DB_PASSWORD"
+          --db_user: "datalakebeta"
+          --conf: "spark.yarn.executor.memoryOverhead=7168"
+          --db_url: "jdbc:postgresql://psql-socialdatagreen-beta.ctcscgdmwqwe.us-west-2.rds.amazonaws.com:5432/socialdata_db"
+          --num_partitions: "15"
+      social-data-service-profiles:
+        connection_name: social-data-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/beta/social_data_profiles.py
+        python_version: 3
+        number_of_workers: 10
+        worker_type: Standard
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/beta/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.executor.memoryOverhead=7168"
+      social-data-service-review-replies:
+        connection_name: social-data-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/beta/social_data_review_replies.py
+        python_version: 3
+        number_of_workers: 10
+        worker_type: Standard
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/beta/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+          --db_password_secret_id: "/apps/glue/jobs/shared/DB_PASSWORD"
+          --db_user: "datalakebeta"
+          --conf: "spark.yarn.executor.memoryOverhead=7168"
+          --db_url: "jdbc:postgresql://psql-socialdatagreen-beta.ctcscgdmwqwe.us-west-2.rds.amazonaws.com:5432/socialdata_db"
+          --num_partitions: "15"
+      social-data-service-reviews:
+        connection_name: social-data-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/beta/social_data_reviews.py
+        python_version: 3
+        number_of_workers: 10
+        worker_type: Standard
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/beta/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+          --db_password_secret_id: "/apps/glue/jobs/shared/DB_PASSWORD"
+          --db_user: "datalakebeta"
+          --conf: "spark.yarn.executor.memoryOverhead=7168"
+          --db_url: "jdbc:postgresql://psql-socialdatagreen-beta.ctcscgdmwqwe.us-west-2.rds.amazonaws.com:5432/socialdata_db"
+          --num_partitions: "30"
+      social-data-service-reviews-delta:
+        connection_name: social-data-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/beta/social_data_reviews_delta.py
+        python_version: 3
+        number_of_workers: 11
+        worker_type: 'G.1X'
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/beta/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.maxAppAttempts=1"
+    triggers:
+      social-data-service:
+        type: ON_DEMAND
+        schedule: null
+        actions:
+        - job_name: social-data-service-merchant-profiles
+        - job_name: social-data-service-profiles
+        - job_name: social-data-service-reviews
+        - job_name: social-data-service-reviews-delta
+        - job_name: social-data-service-review-replies

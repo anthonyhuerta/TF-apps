@@ -1,0 +1,9 @@
+---
+platform-real:
+  team: api-platform
+  pagerduty_enabled: false
+  slack_channel: alerts-api
+  alias: app33
+  secrets:
+  - TRANSACTION_COMPONENT_SERVICE_TOKEN
+  - TRANSACTION_SERVICE_TOKEN

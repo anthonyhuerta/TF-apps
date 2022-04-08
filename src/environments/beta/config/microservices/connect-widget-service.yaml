@@ -1,0 +1,13 @@
+---
+connect-widget:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-storefront
+  alias: app41
+  secrets:
+  - APIGEE_CONSUMER_SECRET
+  - CONNECT_SERVICE_API_TOKEN
+  - CRYPTO_IV
+  - CRYPTO_KEY
+  - FUNNEL_SERVICE_API_TOKEN
+  - SEGMENT_WRITE_KEY

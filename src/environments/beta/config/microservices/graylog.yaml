@@ -1,0 +1,14 @@
+graylog:
+  secrets_with_details:
+    /apps/graylog/graylog-root-password:
+      description: Graylog custom password
+      additional_tags:
+        Kubernetes:Kind: ExternalSecret
+    /apps/graylog/graylog-password-sha2:
+      description: Graylog custom sha256 encrypted password
+      additional_tags:
+        Kubernetes:Kind: ExternalSecret
+    /apps/graylog/graylog-root-username:
+      description: Graylog custom root username
+      additional_tags:
+       Kubernetes:Kind: ExternalSecret

@@ -1,0 +1,10 @@
+kms_keys:
+  rds-cmk:
+    aws_resource_name: rds
+    deletion_window_in_days: 7 #(Optional) Default is: 30.
+    enable_key_rotation: false #(Optional) Default is: false.
+    policy_template: kms_default_key_policy.json.tmpl #(Optional) Default is: "kms_default_key_policy.json.tmpl".
+    policy_params: [] #(Optional) Default is []. This variable is required only for kms_user_read_write_policy.json.tmpl
+  s3-cmk:
+    aws_resource_name: s3
+    deletion_window_in_days: 7

@@ -1,0 +1,39 @@
+---
+file-transfer:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-infra-warning
+  alias: svc51
+  extra-policies:
+    filetransfer-cross-account:
+      description: Grants file-transfer-service read write access to s3 buckets
+      policy_template: s3_read_write.json.tmpl
+      params:
+        read_only_bucket_paths:
+        - fundrocket-data/stg/document_upload/tax_document/*
+        - womply-external-partners/0160/from_womply/*
+        - womply-samtest/womply-external-partners/0160/from_womply/*
+        read_write_bucket_paths:
+        - womply-samtest/womply-external-partners/0153/from_womply/*
+        - womply-samtest/womply-external-partners/0160/from_womply/*
+  queues:
+    medium:
+      receive_wait_time_seconds: 20
+  topics:
+    arns:
+    - arn:aws:sns:us-west-2:754841671700:beta-fundrocket-data-document-uploaded
+    names:
+    - soa-persona-inquiry-created
+  secrets:
+  - DB_PASSWORD_CRYPT
+  postgres:
+    index: 1
+    name: 'service'
+    family: 'postgres12'
+    version: '12.7'
+    instance_class: 'db.t2.small'
+    storage: 10
+    apply_immediately: true
+    storage_encrypted: true
+    performance_insights: true
+    backup_period: 7

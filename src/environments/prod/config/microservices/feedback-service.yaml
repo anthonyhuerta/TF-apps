@@ -1,0 +1,42 @@
+---
+feedback:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-apps-platform
+  alias: app7
+  glue:
+    connections:
+      feedback-service:
+        name: service
+        engine: postgresql
+        host: prod-app7-postgres.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        port: 5432
+        availability_zone: us-west-2b
+    crawlers:
+      datalake-feedback-service:
+        connection_name: feedback-service
+        include_path: service
+        exclude_paths: []
+        table_prefix: 'feedback_'
+        trigger: 'cron(30 11 * * ? *)'
+    jobs:
+      feedback-service:
+        connection_name: feedback-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/prod/feedback_service.py
+        python_version: 3
+        worker_type: Standard
+        number_of_workers: 10
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/prod/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/prod/
+          --job-language: python
+          --womply_env: prod
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.maxAppAttempts=1"
+    triggers:
+      feedback-service:
+        type: SCHEDULED
+        schedule: 'cron(00 12 * * ? *)'
+        actions:
+        - job_name: feedback-service

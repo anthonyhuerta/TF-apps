@@ -1,0 +1,6 @@
+---
+data-lakehouse-api:
+  team: data-platform
+  pagerduty_enabled: false
+  slack_channel: alerts-payments-data
+  alias: svc53

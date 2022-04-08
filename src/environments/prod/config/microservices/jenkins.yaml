@@ -1,0 +1,222 @@
+jenkins:
+  secrets_with_details:
+    /apps/jenkins/datadog-api-key:
+      description: DataDog API key for infra app Jenkins
+      additional_tags: 
+        jenkins:credentials:type: string
+    /apps/jenkins/gemfury-deploy-token:
+      description: gemfury deploy token for infra app Jenkins
+      additional_tags: 
+        jenkins:credentials:type: string
+    /apps/jenkins/github-access-token:
+      description: Github access token for infra app Jenkins
+      additional_tags: 
+        jenkins:credentials:type: usernamePassword
+        jenkins:credentials:username: womply-jenkins-prod
+    /apps/jenkins/google-oauth2-secret:
+      description: Google oauth2 secret for infra app Jenkins
+      additional_tags: 
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/analytics/customer-data/shared/configs: 
+      description: Shared configs required to trigger customer data jobs via infra app Jenkins
+      additional_tags: 
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/analytics/datalake/litmus/configs:
+      description: Configs required to trigger litmus data load via infra app Jenkins
+      additional_tags: 
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/analytics/data-science-research/shared/configs:
+      description: Shared configs required to trigger data science research jobs via infra app Jenkins
+      additional_tags: 
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/analytics/fundrocket-jobs/shared/configs:
+      description: Shared configs required to trigger FundRocket jobs via infra app Jenkins
+      additional_tags:
+        "jenkins:credentials:type": string
+    /apps/jenkins/jobs/analytics/fundrocket-jobs/shared/fundrocket-oauth-token:
+      description: Oauth token required by FundRocket jobs triggered via infra app Jenkins
+      additional_tags:
+        "jenkins:credentials:type": string
+    /apps/jenkins/jobs/analytics/transaction-spark-jobs/shared/configs:
+      description: Shared configs required to trigger analytics jobs via infra app Jenkins
+      additional_tags: 
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/checks/monitoring-check-scripts/shared/configs:
+      description: Shared configs required to run monitoring scripts via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/infra/devops-api-service/shared/configs:
+      description: Shared configs required to run python scripts via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/infra/womply-ansible/restore-database-from-s3-backup/pgp-passphrase:
+      description: Passphrase for womply-infra pgp key to decrypt db backups
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/infra/womply-ansible/shared/citus-ssh-key:
+      description: SSH key for infra app jenkins to connect to citus instances
+      additional_tags: 
+        Kubernetes:Kind: ExternalSecret
+    /apps/jenkins/jobs/infra/womply-ansible/shared/default-ssh-key:
+      description: SSH key for ansible to run playbooks via infra app Jenkins
+      additional_tags: 
+        Kubernetes:Kind: ExternalSecret
+    /apps/jenkins/jobs/infra/womply-ansible/transfer-files/pgp-passphrase:
+      description: Passphrase for infra app jenkins to decrypt files
+      additional_tags: 
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/microservices/affiliate-marketing-service/shared/jenkins-api-token:
+      description: REST api token for infra app jenkins to call affiliate-marketing-service
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/microservices/business-service/shared/configs:
+      description: Shared configs required to trigger business-service jobs via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/microservices/customer-graph-service/shared/jenkins-api-token:
+      description: REST api token for infra app jenkins to call customer-graph-service
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/microservices/killbill-service/shared/api-credentials:
+      description: API key and secret for infra app jenkins to call killbill-service
+      additional_tags:
+        jenkins:credentials:type: usernamePassword
+        jenkins:credentials:username: cf23be3c6b
+    /apps/jenkins/jobs/microservices/killbill-service/shared/user-credentials:
+      description: Username and password for infra app jenkins to call killbill-service
+      additional_tags:
+        jenkins:credentials:type: usernamePassword
+        jenkins:credentials:username: billing-service
+    /apps/jenkins/jobs/microservices/more-reviews-service/shared/configs:
+      description: Shared configs required to trigger more-reviews-service jobs via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/microservices/pos-integration-service/shared/jenkins-api-token:
+      description: REST api token for infra app jenkins to call pos-integration-service
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/microservices/pos-service/shared/jenkins-api-token: 
+      description: REST api token for infra app jenkins to call pos-service
+      additional_tags: 
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/microservices/product-service/shared/jenkins-api-token: 
+      description: REST api token for infra app jenkins to call product-service
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/microservices/reputation-defense-service/shared/jenkins-api-token:
+      description: REST api token for infra app jenkins to call reputation-defense-service
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/microservices/signup-service/shared/jenkins-api-token:
+      description: REST api token for infra app jenkins to call signup-service
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/microservices/transaction-component-service/shared/jenkins-api-token:
+      description: REST api token for infra app jenkins to call transaction-component-service
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/microservices/user-service/shared/jenkins-api-token: 
+      description: REST api token for infra app jenkins to call user-service
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/microservices/womply-pay-service/shared/jenkins-api-token:
+      description: REST api token for infra app jenkins to call womply-pay-service
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/billing-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/bizinfo-search-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/business-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/campaign-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/customer-directory-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/customer-graph-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/feedback-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/funnel-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/gmd-nav-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/login-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/more-reviews-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/partner-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/product-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/reputation-defense-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/signup-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/storefront-data-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/subscription-service/configs: 
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/swiper-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/telephony-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/user-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/vericode-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/jobs/tests/womply-pay-service/configs:
+      description: Shared configs required to run smoke tests via infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string
+    /apps/jenkins/quay-bot-user:
+      description: Bot user credentials to access quay registry via Jenkins
+      additional_tags:
+        jenkins:credentials:type : usernamePassword
+        jenkins:credentials:username: womply+prod_eks_main
+    /apps/jenkins/slack-oauth-token:
+      description: Slack oauth access token for infra app Jenkins
+      additional_tags:
+        jenkins:credentials:type: string

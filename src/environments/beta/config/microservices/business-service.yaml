@@ -1,0 +1,71 @@
+---
+business:
+  team: data-platform
+  pagerduty_enabled: false
+  slack_channel: alerts-payments-data
+  alias: svc16
+  glue:
+    connections:
+      business-service:
+        name: business_db
+        engine: postgresql
+        host: psql-business-beta.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        port: 5432
+        availability_zone: us-west-2a
+      monolith-merchant-locations:
+        name: womply
+        engine: mysql
+        host: testing.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        port: 3306
+        availability_zone: us-west-2b
+    crawlers:
+      datalake-business-service:
+        connection_name: business-service
+        include_path: business_db
+        exclude_paths: []
+        trigger: 'cron(30 13 * * ? *)'
+      datalake-monolith-merchant-locations:
+        connection_name: monolith-merchant-locations
+        include_path: womply
+        exclude_paths: [ ]
+        trigger: 'cron(30 09 * * ? *)'
+    jobs:
+      business-service:
+        connection_name: business-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/beta/business_service.py
+        python_version: 3
+        worker_type: Standard
+        number_of_workers: 10
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/beta/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.maxAppAttempts=1"
+      monolith-merchant-locations:
+        connection_name: monolith-merchant-locations
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/beta/monolith_merchant_locations_delta.py
+        python_version: 3
+        worker_type: Standard
+        number_of_workers: 20
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/beta/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.maxAppAttempts=1"
+    triggers:
+      business-service:
+        type: ON_DEMAND
+        schedule: null
+        actions:
+        - job_name: business-service
+      monolith-merchant-locations:
+        type: ON_DEMAND
+        schedule: null
+        actions:
+        - job_name: monolith-merchant-locations

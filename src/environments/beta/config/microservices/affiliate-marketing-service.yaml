@@ -1,0 +1,55 @@
+---
+affiliate-marketing:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-apps-platform
+  alias: app42
+  secrets:
+  - DB_PASSWORD_CRYPT
+  - FIREBASE_API_KEY
+  - FUNDROCKET_SERVICE_API_TOKEN
+  - JENKINS_API_TOKEN
+  - KICKBOX_KEY
+  - SAASQUATCH_API_TOKEN
+  - SENDGRID_READONLY_API_KEY
+  - SIGNUP_SERVICE_API_TOKEN
+  - WOMPLY_PAY_SERVICE_API_TOKEN
+  glue:
+    connections:
+      affiliate-marketing-service:
+        availability_zone: us-west-2a
+        engine: postgresql
+        port: 5432
+        host: psql-affiliatemarketing-beta.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        name: service
+    crawlers:
+      datalake-affiliate-marketing-service:
+        connection_name: affiliate-marketing-service
+        exclude_paths: []
+        include_path: service
+        trigger: null
+    jobs:
+      affiliate-marketing-service:
+        connection_name: affiliate-marketing-service
+        glue_version: '3.0'
+        script_location: s3://womply-datalake-scripts/beta/affiliate_marketing_service.py
+        python_version: 3
+        number_of_workers: 4
+        worker_type: 'G.1X'
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/beta/python-shell-scripts/Data_Validation.zip,s3://womply-datalake-scripts/beta/python-shell-scripts/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.maxAppAttempts=1"
+          --db_user: datalakebeta
+          --additional-python-modules: psycopg2-binary==2.8.5
+          --python-modules-installer-option: install
+          --db_password_secret_id: "/apps/glue/jobs/shared/DB_PASSWORD"
+    triggers:
+      affiliate-marketing-service:
+        type: ON_DEMAND
+        schedule: null
+        actions:
+        - job_name: affiliate-marketing-service

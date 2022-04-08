@@ -1,0 +1,41 @@
+${jsonencode({
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket"
+      ],
+      "Resource": [for bucket in buckets : "arn:aws:s3:::${bucket}"]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:PutObjectAcl",
+        "s3:DeleteObject"
+      ],
+      "Resource": [for bucket in buckets : "arn:aws:s3:::${bucket}/${env}/*"]
+    },
+    {
+        "Sid": "AllowReadSecretsFromASM",
+        "Effect": "Allow",
+        "Action": [
+            "secretsmanager:GetResourcePolicy",
+            "secretsmanager:GetSecretValue",
+            "secretsmanager:DescribeSecret",
+            "secretsmanager:ListSecretVersionIds"
+        ],
+        "Resource": [
+            for secret_name in secrets : "arn:aws:secretsmanager:${region}:${account_id}:secret:${secret_name}*"
+        ]
+    },
+    {
+        "Sid": "AllowListSecrets",
+        "Effect": "Allow",
+        "Action": "secretsmanager:ListSecrets",
+        "Resource": "*"
+    }
+  ]
+})}

@@ -1,0 +1,10 @@
+---
+partner-admin-portal:
+  team: app
+  pagerduty_enabled: false
+  # slack_channel: alerts-apps-platform
+  slack_channel: alerts-ngi
+  alias: app30
+  # ecs_shortname: 'adminportal'  # Used to construct RDS name
+  secrets:
+  - DATABASE_PASSWORD

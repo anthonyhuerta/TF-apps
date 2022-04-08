@@ -1,0 +1,11 @@
+---
+sbo-creds:
+  team: app
+  pagerduty_enabled: true
+  slack_channel: alerts-connections
+  alias: svc42
+  redis-sidekiq:
+    instance_type: cache.t3.medium
+    version: 5.0.6
+    parameter_version: redis5.0
+

@@ -1,0 +1,7 @@
+argocd:
+  secrets_with_details:
+    /apps/argocd/ssh-private-key:
+      description: Private SSH key for infra app Argo CD
+      additional_tags:
+        Kubernetes:Kind : ExternalSecret
+

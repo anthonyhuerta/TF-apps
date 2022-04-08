@@ -1,0 +1,110 @@
+---
+fundrocket:
+  team: fin
+  pagerduty_enabled: false
+  slack_channel: alerts-fin
+  alias: app43
+  extra-policies:
+    athena-data-query-access:
+      description: Grants fundrocket-sevice access to athena to query data and metadata
+      policy_template: athena_data_query_access.json.tmpl
+      params:
+        queries:
+        - '*'
+    s3-fundrocket-read-only:
+      description: Grants fundrocket-sevice read-only access to various s3 buckets
+      policy_template: s3_read_only.json.tmpl
+      params:
+        read_only_bucket_paths:
+        - womply-reports/app39-womply-pay-service/prod/affiliate_payouts/ppp/*
+        - womply-reports/app42-affiliate-marketing-service/prod/affiliate_payouts/ppp/*
+    s3-fundrocket-read-write:
+      description: Grants fundrocket-sevice read-write access to various s3 buckets
+      policy_template: s3_read_write.json.tmpl
+      params:
+        read_only_bucket_paths:
+        - fundrocket-data/prod/*
+        - vault-file-service-production/fastlane/raw/*
+        - vault-file-service-production/pay/raw/*
+        read_write_bucket_paths:
+        - fundrocket-data/prod/*
+        - vault-file-service-production/fastlane/raw/*
+        - vault-file-service-production/pay/raw/*
+    sqs-access:
+      description: Grants fundrocket-sevice access to SQS queues
+      policy_template: sqs_access.json.tmpl
+      params:
+        queues:
+        - us-east-1:754841671700:prod*
+  redis-cache:
+    instance_type: cache.t3.medium
+    version: 5.0.6
+    parameter_version: redis5.0
+  secrets:
+  - AFFILIATE_MARKETING_SERVICE_API_TOKEN
+  - AUTH0_CLIENT_SECRET
+  - AUTH0_MGMT_CLIENT_SECRET
+  - BENWORTH_AUTH_CODE
+  - BENWORTH_HASHED_PASSWORD
+  - CAPITAL_PLUS_AUTH_CODE
+  - CAPITAL_PLUS_HASHED_PASSWORD
+  - DB_CONNECTION
+  - DREAMSPRING_AUTH_CODE
+  - DREAMSPRING_HASHED_PASSWORD
+  - DWOLLA_KEY
+  - DWOLLA_SECRET
+  - EMAIL_SERVICE_API_TOKEN
+  - FEESPOTTER_TWILIO_API_KEY
+  - FOUNTAINHEAD_AUTH_CODE
+  - FOUNTAINHEAD_HASHED_PASSWORD
+  - FR_SECRET_KEY
+  - FUNDINGCIRCLE_AUTH_CODE
+  - FUNDINGCIRCLE_BANK_ID
+  - FUNDINGCIRCLE_HASHED_PASSWORD
+  - HARVEST_AUTH_CODE
+  - HARVEST_HASHED_PASSWORD
+  - LOB_API_KEY
+  - MIDDESK_API_KEY
+  - NMI_PROCESSOR_ID
+  - NMI_SECURITY_KEY
+  - PAY_DWOLLA_KEY
+  - PAY_DWOLLA_SECRET
+  - PERSONA_API_TOKEN
+  - PERSONA_SIGNATURE_KEY
+  - PLAID_PUBLIC_KEY
+  - PLAID_SECRET
+  - SAASQUATCH_API_TOKEN
+  - SALESFORCE_PASSWORD
+  - SALESFORCE_SECURITY_TOKEN
+  - SBA_LOAN_STATUS_API_HARVEST_TOKEN
+  - SBA_LOAN_STATUS_API_HARVEST_VENDOR_KEY
+  - SEDCO_AUTH_CODE
+  - SEDCO_HARVEST_AUTH_CODE
+  - SEDCO_HARVEST_HASHED_PASSWORD
+  - SEDCO_HASHED_PASSWORD
+  - SENDGRID_API_KEY
+  - SENTRY_DSN
+  - SIGNUP_SERVICE_API_TOKEN
+  - SMARTY_STREETS_WEBSITE_KEY
+  - TMC_AUTH_CODE
+  - TMC_HASHED_PASSWORD
+  - TWILIO_API_KEY
+  - TWILIO_AUTH_TOKEN
+  - USER_SERVICE_API_TOKEN
+  - VAULT_FILE_SERVICE_API_TOKEN
+  - WOMPLY_PLAID_PUBLIC_KEY
+  - WOMPLY_PLAID_SECRET
+  - WOMPLY_TEST_AUTH_CODE
+  - WOMPLY_TEST_HASHED_PASSWORD
+  - WOMPLY_TWILIO_API_KEY
+  - ZENDESK_KEY
+
+fundrocket-web:
+  team: fin
+  pagerduty_enabled: true
+  slack_channel: d-fin-sentry
+  alias: app43
+  topics:
+    names:
+    - soa-payment-transactions
+

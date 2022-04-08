@@ -1,0 +1,41 @@
+---
+customer-graph:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-apps-platform
+  alias: svc35
+  glue:
+    connections:
+      customer-graph-service:
+        name: customergraph_db
+        engine: postgresql
+        host: psql-customergraph-beta.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        port: 5432
+        availability_zone: us-west-2c
+    crawlers:
+      datalake-customer-graph-service:
+        connection_name: customer-graph-service
+        include_path: customergraph_db
+        exclude_paths: []
+        trigger: 'cron(30 08 * * ? *)'
+    jobs:
+      customer-graph-service:
+        connection_name: customer-graph-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/beta/customer_graph_service.py
+        python_version: 3
+        worker_type: Standard
+        number_of_workers: 10
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/beta/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.maxAppAttempts=1"
+    triggers:
+      customer-graph-service:
+        type: ON_DEMAND
+        schedule: null
+        actions:
+        - job_name: customer-graph-service

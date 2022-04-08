@@ -1,0 +1,18 @@
+${jsonencode({
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "SQSAccess",
+      "Effect": "Allow",
+      "Action": [
+        "sqs:ListDeadLetterSourceQueues",
+        "sqs:ReceiveMessage",
+        "sqs:ChangeMessageVisibility*",
+        "sqs:GetQueue*",
+        "sqs:DeleteMessage*",
+        "sqs:SendMessage*"
+      ],
+      "Resource": distinct(sort([for queue in queues : "arn:aws:sqs:${split("sqs:", trimprefix(queue, "sqs:"))[0]}"]))
+    }
+  ]
+})}

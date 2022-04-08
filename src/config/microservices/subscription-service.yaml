@@ -1,0 +1,8 @@
+---
+subscription:
+  team: app
+  slack_channel: alerts-ngi
+  alias: svc39
+  secrets:
+  - DB_PASSWORD_CRYPT
+  - LOGGLY_TOKEN

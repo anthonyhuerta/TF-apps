@@ -1,0 +1,13 @@
+env   = "YOUR_NAME"
+realm = "womply"
+
+prefix = "YOUR_NAME"
+
+legacy_datalake_bucket_arn = "arn:aws:s3:::womply-datalake-data"
+microservice_config_dir    = "environments/localdev/config/microservices/"
+region                     = "us-west-2"
+topic_config_dir           = "environments/localdev/config/topics/"
+tfc_workspaces = {
+  clusters = ""
+  network  = ""
+}

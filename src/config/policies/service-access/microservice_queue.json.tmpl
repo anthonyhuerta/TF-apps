@@ -1,0 +1,40 @@
+${jsonencode({
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "SNSTopics",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "sns.amazonaws.com"
+      },
+      "Action": "sqs:SendMessage",
+      "Resource": "${resource_arn}",
+      "Condition": {
+        "ArnEquals": {
+          "AWS:SourceArn": [for topic_arn in topic_arns : "${topic_arn}"]
+        }
+      }
+    },
+    {
+      "Sid": "CrossAccountSendDeleteReceive",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": [
+          "arn:aws:iam::754841671700:root",
+          "arn:aws:iam::985433556411:root"
+        ]
+      },
+      "Action": [
+        "sqs:ChangeMessageVisibility",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ListDeadLetterSourceQueues",
+        "sqs:ReceiveMessage",
+        "sqs:SendMessage"
+      ],
+      "Resource": "${resource_arn}"
+    }
+  ]
+}
+)}

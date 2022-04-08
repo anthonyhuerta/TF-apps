@@ -1,0 +1,57 @@
+${jsonencode({
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadWriteSecrets",
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:UpdateSecret"
+      ],
+      "Resource": distinct(sort([for secret_path in read_write_secrets : "arn:aws:secretsmanager:${region}:${account_id}:secret:${secret_path}"]))
+    },
+    {
+      "Sid": "ListSecrets",
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret",
+      ],
+      "Resource": distinct(sort([for secret_path in read_only_secrets : "arn:aws:secretsmanager:${region}:${account_id}:secret:${secret_path}"]))
+    },
+    {
+      "Sid": "EditRecordSets",
+      "Effect": read_write_statement_effect,
+      "Action": "route53:ChangeResourceRecordSets",
+      "Resource": distinct(sort([for zone_id in read_write_hosted_zone_ids : "arn:aws:route53:::hostedzone/${zone_id}"]))
+    },
+    {
+      "Sid": "ListRecordSets",
+      "Effect": "Allow",
+      "Action": [
+        "route53:GetChange",
+        "route53:ListHostedZones",
+        "route53:ListResourceRecordSets",
+        "route53:ListTagsForResource",
+        "secretsmanager:ListSecrets",
+        "s3:ListMultipartUploadParts",
+        "s3:ListBucketVersions",
+        "s3:ListBucketMultipartUploads",
+        "s3:ListBucket",
+      ],
+       "Resource": "*"
+    },
+    {
+      "Sid": "S3ReadWriteAccess",
+      "Effect": "Allow",
+      "Action": [
+        "s3:DeleteObject",
+        "s3:Get*",
+        "s3:PutObject",
+        "s3:PutObjectAcl"
+      ],
+      "Resource": sort([for bucket_path in read_write_bucket_paths : "arn:aws:s3:::${trimprefix(bucket_path, "s3://")}"])
+    }
+  ]
+})}

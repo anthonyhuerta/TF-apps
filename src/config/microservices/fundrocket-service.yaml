@@ -1,0 +1,33 @@
+---
+fundrocket:
+  team: fin
+  pagerduty_enabled: false
+  slack_channel: alerts-fin
+  alias: app43
+  extra-policies:
+    s3-affiliate-payouts-read-only:
+      description: Grants read-only access to affiliate-payouts folder in example-bucket s3 bucket
+      policy_template: s3_read_only.json.tmpl
+      params:
+        read_only_bucket_paths:
+        - example-bucket/app42-affiliate-marketing-service/ENV/affiliate_payouts/ppp/*
+  redis-cache:
+    instance_type: cache.t3.small
+    version: 5.0.6
+    parameter_version: redis5.0
+  secrets:
+  - AFFILIATE_MARKETING_SERVICE_API_TOKEN
+  - AUTH0_CLIENT_SECRET
+  - AUTH0_MGMT_CLIENT_SECRET
+  - DWOLLA_KEY
+  - DWOLLA_SECRET
+  - LOB_API_KEY
+  - PAY_DWOLLA_KEY
+  - PAY_DWOLLA_SECRET
+  - PLAID_PUBLIC_KEY
+  - PLAID_SECRET
+  - SALESFORCE_PASSWORD
+  - SENDGRID_API_KEY
+  - TWILIO_API_KEY
+  - WOMPLY_PLAID_SECRET
+  - WOMPLY_TEST_HASHED_PASSWORD

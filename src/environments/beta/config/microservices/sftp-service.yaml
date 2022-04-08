@@ -1,0 +1,6 @@
+---
+sftp:
+  team: infra
+  pagerduty_enabled: false
+  slack_channel: alerts-infra-warning
+  alias: svc43

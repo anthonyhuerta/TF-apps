@@ -1,0 +1,40 @@
+customer-import:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-connections
+  alias: app28
+  glue:
+    connections:
+      customer-import-service:
+        name: customerimport_db
+        engine: postgresql
+        host: psql-customerimport-beta.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        port: 5432
+        availability_zone: us-west-2c
+    crawlers:
+      datalake-customer-import-service:
+        connection_name: customer-import-service
+        include_path: customerimport_db
+        exclude_paths: []
+        trigger: 'cron(05 22 * * ? *)'
+    jobs:
+      customer-import-service:
+        connection_name: customer-import-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/beta/customer_import_service.py
+        python_version: 3
+        number_of_workers: 10
+        worker_type: 'G.1X'
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/beta/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.maxAppAttempts=1"
+    triggers:
+      customer-import-service:
+        type: ON_DEMAND
+        trigger: null
+        actions:
+        - job_name: customer-import-service

@@ -1,0 +1,15 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "",
+            "Effect": "Allow",
+            "Action": [
+                "logs:PutLogEvents"
+            ],
+            "Resource": [
+                "arn:aws:logs:us-west-2:${account_id}:log-group:/aws/kinesisfirehose/${kinesis_firehose_name}:log-stream:*"
+            ]
+        }
+    ]
+}

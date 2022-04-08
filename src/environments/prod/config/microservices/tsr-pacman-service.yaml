@@ -1,0 +1,29 @@
+---
+tsr-pacman:
+  team: data-platform
+  pagerduty_enabled: false
+  slack_channel: alerts-payments-data
+  alias: app27
+  secrets:
+  - AWS_ACCESS_KEY_ID
+  - AWS_SECRET_ACCESS_KEY
+  - DEVOPS_API_SERVICE_USER_PW
+  - LOGGLY_TOKEN
+  - PAGERDUTY_DATAVAL_KEY
+  - PAGERDUTY_PAYMENTS_KEY
+  - PROD_DB_USER_PW
+  - REDSHIFT_PASSWORD
+  - SECRET_KEY_BASE
+  - SENDGRID_PW
+  - SENDGRID_USER
+  postgres:
+    index: 1
+    name: txanalysis
+    family: 'postgres11'
+    version: '11.12'
+    instance_class: 'db.m5.large'
+    storage: 80
+    apply_immediately: true
+    storage_encrypted: true
+    performance_insights: true
+    backup_period: 7

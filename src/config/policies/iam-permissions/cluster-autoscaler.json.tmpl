@@ -1,0 +1,33 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "autoscaling:DescribeAutoScalingGroups",
+        "autoscaling:DescribeAutoScalingInstances",
+        "autoscaling:DescribeLaunchConfigurations",
+        "autoscaling:DescribeTags",
+        "ec2:DescribeLaunchTemplateVersions"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "autoscaling:SetDesiredCapacity",
+        "autoscaling:TerminateInstanceInAutoScalingGroup",
+        "autoscaling:UpdateAutoScalingGroup"
+      ],
+      "Resource": [
+        "arn:aws:autoscaling:${region}:${account_id}:autoScalingGroup:*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "autoscaling:ResourceTag/k8s.io/cluster-autoscaler/enabled": "true",
+          "autoscaling:ResourceTag/kubernetes.io/cluster/${cluster_name}": "owned"
+        }
+      }
+    }
+  ]
+}

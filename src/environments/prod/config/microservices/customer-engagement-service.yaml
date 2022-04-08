@@ -1,0 +1,51 @@
+---
+customer-engagement:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-email-platform
+  alias: svc37
+  secrets:
+  - AWS_SECRET_ACCESS_KEY
+  - CUSTOMER_GRAPH_SERVICE_TOKEN
+  - DATABASE_PASSWORD
+  - EXTERNAL_DATA_PROXY_SERVICE_TOKEN
+  - FACEBOOK_TOKEN
+  - INSIGHTS_SERVICE_TOKEN
+  - MILESTONE_SERVICE_TOKEN
+  - MORE_REVIEWS_SERVICE_TOKEN
+  - TRANSACTION_COMPONENT_SERVICE_TOKEN
+  glue:
+    connections:
+      customer-engagement-service:
+        name: customerengage_db
+        engine: postgresql
+        host: psql-customerengage-prod.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        port: 5432
+        availability_zone: us-west-2c
+    crawlers:
+      datalake-customer-engagement-service:
+        connection_name: customer-engagement-service
+        include_path: customerengage_db
+        exclude_paths: ['schema_migrations**']
+        trigger: 'cron(00 05 * * ? *)'
+    jobs:
+      customer-engagement-service:
+        connection_name: customer-engagement-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/prod/customer_engagement_service.py
+        python_version: 3
+        worker_type: Standard
+        number_of_workers: 10
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/prod/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/prod
+          --job-language: python
+          --womply_env: prod
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.maxAppAttempts=1"
+    triggers:
+      customer-engagement-service:
+        type: SCHEDULED
+        schedule: 'cron(30 05 * * ? *)'
+        actions:
+        - job_name: customer-engagement-service

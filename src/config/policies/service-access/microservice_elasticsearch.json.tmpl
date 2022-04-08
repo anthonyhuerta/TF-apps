@@ -1,0 +1,14 @@
+${jsonencode({
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": [for account_id in account_ids : "arn:aws:iam::${account_id}:root"]
+      },
+      "Action": "es:*",
+      "Resource": "${resource_arn}/*"
+    }
+  ]
+}
+)}

@@ -1,0 +1,19 @@
+common-secrets:
+  secrets_with_details:
+    /clusters/main/APPOPTICS_API_TOKEN:
+      description: AppOptics Key for cluster 'main'
+      additional_tags: 
+        Kubernetes:Kind: ExternalSecret
+    /clusters/main/APPOPTICS_SERVICE_KEY:
+      description: AppOptics Key for cluster 'main'
+      additional_tags: 
+        Kubernetes:Kind: ExternalSecret
+    /clusters/main/DATADOG_API_KEY:
+      description: DataDog API key for cluster 'main'
+      additional_tags: 
+        Kubernetes:Kind: ExternalSecret
+    /clusters/main/quay/configs:
+      description: Quay docker registry credentials for cluster 'main'
+      additional_tags: 
+        Kubernetes:Kind: ExternalSecret
+

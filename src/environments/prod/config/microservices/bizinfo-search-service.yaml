@@ -1,0 +1,16 @@
+---
+bizinfo-search:
+  team: app
+  pagerduty_enabled: true
+  slack_channel: alerts-storefront
+  alias: svc48
+  elasticsearch:
+    clusters:
+    - '1'
+  topics:
+    names:
+    - soa-business-info-updated
+    filters: '{"X-Womply-EventType": ["StorefrontSync"]}'
+  secrets:
+  - FUNNEL_SERVICE_API_TOKEN
+  - STOREFRONT_DATA_SERVICE_API_TOKEN

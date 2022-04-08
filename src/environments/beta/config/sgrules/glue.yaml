@@ -1,0 +1,7 @@
+self-glue-all:
+  from_port: 0
+  protocol: -1
+  security_group_id: glue
+  self: true
+  to_port: 0
+  type: ingress

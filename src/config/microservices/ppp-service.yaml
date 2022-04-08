@@ -1,0 +1,8 @@
+---
+ppp:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-ngi
+  alias: svc50
+  secrets:
+  - DB_PASSWORD_CRYPT

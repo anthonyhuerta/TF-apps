@@ -1,0 +1,14 @@
+---
+funnel:
+  team: app
+  pagerduty_enabled: true
+  slack_channel: alerts-storefront
+  alias: app37
+  queues:
+    medium:
+      age_critical: 5400  # 90 minutes
+      size_critical: 10000
+  topics:
+    names:
+    - soa-business-info-updated
+    filters: '{"X-Womply-EventType": [{"anything-but": ["StorefrontSync"]}]}'

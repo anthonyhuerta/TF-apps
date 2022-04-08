@@ -1,0 +1,71 @@
+---
+mid:
+  team: data-platform
+  pagerduty_enabled: false
+  slack_channel: alerts-payments-data
+  alias: svc14
+  glue:
+    connections:
+      mid-service:
+        name: mid_service
+        engine: postgresql
+        host: "psql-mid-prod.ctcscgdmwqwe.us-west-2.rds.amazonaws.com"
+        port: 5432
+        availability_zone: us-west-2a
+      monolith-ccpm:
+        name: womply
+        engine: mysql
+        host: "common-mysqlreports2-prod.ctcscgdmwqwe.us-west-2.rds.amazonaws.com"
+        port: 3306
+        availability_zone: us-west-2a
+    crawlers:
+      datalake-mid-service:
+        connection_name: mid-service
+        include_path: mid_service
+        exclude_paths: []
+        trigger: 'cron(00 03 * * ? *)'
+      datalake-monolith-ccpm:
+        connection_name: monolith-ccpm
+        include_path: womply
+        exclude_paths: []
+        trigger: 'cron(30 09 * * ? *)'
+    jobs:
+      mid-service:
+        connection_name: mid-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/prod/mid_service.py
+        python_version: 3
+        number_of_workers: 10
+        worker_type: Standard
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/prod/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/prod
+          --job-language: python
+          --womply_env: prod
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.maxAppAttempts=1"
+      monolith-ccpm:
+        connection_name: monolith-ccpm
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/prod/monolith_and_ccpm.py
+        python_version: 3
+        worker_type: Standard
+        number_of_workers: 20
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/prod/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/prod/
+          --job-language: python
+          --womply_env: prod
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.maxAppAttempts=1"
+    triggers:
+      mid-service:
+        type: SCHEDULED
+        schedule: 'cron(30 03 * * ? *)'
+        actions:
+        - job_name: mid-service
+      monolith-ccpm:
+        type: SCHEDULED
+        schedule: 'cron(00 10 * * ? *)'
+        actions:
+        - job_name: monolith-ccpm

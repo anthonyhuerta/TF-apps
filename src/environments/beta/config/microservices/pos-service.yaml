@@ -1,0 +1,41 @@
+---
+pos:
+  team: data-platform
+  pagerduty_enabled: false
+  slack_channel: alerts-connections
+  alias: svc44
+  glue:
+    connections:
+      pos-service:
+        name: service
+        engine: postgresql
+        host: db-posservice-preprod.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        port: 5432
+        availability_zone: us-west-2a
+    crawlers:
+      datalake-pos-service:
+        connection_name: pos-service
+        include_path: service
+        exclude_paths: []
+        trigger: 'cron(15 12 * * ? *)'
+    jobs:
+      pos-service:
+        connection_name: pos-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/beta/pos_service.py
+        python_version: 3
+        worker_type: 'G.1X'
+        number_of_workers: 10
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/beta/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.maxAppAttempts=1"
+    triggers:
+      pos-service:
+        type: ON_DEMAND
+        schedule: null
+        actions:
+        - job_name: pos-service

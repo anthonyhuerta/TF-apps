@@ -1,0 +1,41 @@
+---
+bizshield:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-email-platform
+  alias: svc27
+  glue:
+    connections:
+      bizshield-service:
+        availability_zone: us-west-2a
+        engine: postgresql
+        port: 5432
+        host: psql-bizshield-prod.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        name: bizshield_db
+    crawlers:
+      datalake-bizshield-service:
+        connection_name: bizshield-service
+        include_path: bizshield_db
+        exclude_paths: ['schema_migrations**']
+        trigger: 'cron(30 05 * * ? *)'
+    jobs:
+      bizshield-service:
+        connection_name: bizshield-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/prod/bizshield_service.py
+        python_version: 3
+        number_of_workers: 10
+        worker_type: Standard
+        default_arguments:
+          --TempDir: s3://womply-datalake-glue-working/prod/
+          --conf: "spark.yarn.maxAppAttempts=1"
+          --extra-py-files: s3://womply-datalake-scripts/prod/datalake-common-lib.zip
+          --job-language: python
+          --womply_env: prod
+          --database_name: glue-catalog-database
+    triggers:
+      bizshield-service:
+        type: ON_DEMAND
+        schedule: null
+        actions:
+        - job_name: bizshield-service

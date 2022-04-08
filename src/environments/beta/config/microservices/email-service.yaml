@@ -1,0 +1,61 @@
+---
+email:
+  team: app
+  pagerduty_enabled: false
+  slack_channel: alerts-email-platform
+  alias: svc12
+  glue:
+    connections:
+      email-service:
+        name: service
+        engine: postgresql
+        host: db-emailservice-preprod.ctcscgdmwqwe.us-west-2.rds.amazonaws.com
+        port: 5432
+        availability_zone: us-west-2c
+    crawlers:
+      datalake-email-service:
+        connection_name: email-service
+        include_path: service
+        exclude_path: ['schema_migrations\*\***']
+        trigger: 'cron(00 10 * * ? *)'
+        table_prefix: 'email_'
+    jobs:
+      email-service:
+        connection_name: email-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/beta/email_service.py
+        python_version: 3
+        worker_type: Standard
+        number_of_workers: 10
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/beta/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+          --conf: "spark.yarn.maxAppAttempts=1"
+      email-service-emails:
+        connection_name: email-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/beta/email_service_emails.py
+        python_version: 3
+        worker_type: Standard
+        number_of_workers: 10
+        default_arguments:
+          --extra-py-files: s3://womply-datalake-scripts/beta/datalake-common-lib.zip
+          --TempDir: s3://womply-datalake-glue-working/beta/
+          --job-language: python
+          --womply_env: beta
+          --database_name: glue-catalog-database
+          --db_password_secret_id: "/apps/glue/jobs/shared/DB_PASSWORD"
+          --db_user: "datalakebeta"
+          --conf: "spark.yarn.executor.memoryOverhead=7168"
+          --db_url: "jdbc:postgresql://db-emailservice-preprod.ctcscgdmwqwe.us-west-2.rds.amazonaws.com:5432/service"
+          --num_partitions: "20"
+    triggers:
+      email-service:
+        type: ON_DEMAND
+        schedule: null
+        actions:
+        - job_name: email-service
+        - job_name: email-service-emails

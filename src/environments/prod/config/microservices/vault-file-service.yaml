@@ -1,0 +1,66 @@
+---
+vault-file:
+  team: app
+  pagerduty_enabled: true
+  slack_channel: alerts-apps-platform
+  alias: app4
+  topics:
+    arns:
+    - arn:aws:sns:us-west-2:754841671700:prod-fundrocket-data-document-uploaded
+    - arn:aws:sns:us-west-2:754841671700:prod-fundrocket-ppp-application-status-event
+    names:
+    - s3-events-vault-file-service
+  glue:
+    connections:
+      vault-file-service:
+        availability_zone: us-west-2b
+        engine: postgresql
+        port: 5432
+        host: "db-vault-prod.ctcscgdmwqwe.us-west-2.rds.amazonaws.com"
+        name: vault_file_metadata
+    crawlers:
+      datalake-vault-file-service:
+        connection_name: vault-file-service
+        include_path: vault_file_metadata
+        exclude_paths: []
+        trigger: 'cron(00 06 * * ? *)'
+    jobs:
+      vault-file-service:
+        connection_name: vault-file-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/prod/vault_file_service.py
+        python_version: 3
+        number_of_workers: 20
+        worker_type: 'G.2X'
+        default_arguments:
+          --TempDir: s3://womply-datalake-glue-working/prod
+          --conf: "spark.yarn.maxAppAttempts=1"
+          --extra-py-files: s3://womply-datalake-scripts/prod/datalake-common-lib.zip
+          --job-language: python
+          --womply_env: prod
+          --database_name: glue-catalog-database
+      vault-file-service-ocr-data:
+        connection_name: vault-file-service
+        glue_version: '2.0'
+        script_location: s3://womply-datalake-scripts/prod/vault_file_service_ocr_data.py
+        python_version: 3
+        number_of_workers: 20
+        worker_type: 'G.2X'
+        default_arguments:
+          --TempDir: s3://womply-datalake-glue-working/prod/
+          --extra-py-files: s3://womply-datalake-scripts/prod/datalake-common-lib.zip
+          --job-language: python
+          --womply_env: prod
+          --database_name: glue-catalog-database
+          --db_password_secret_id: "/apps/glue/jobs/shared/DB_PASSWORD"
+          --conf: "spark.yarn.maxAppAttempts=1"
+          --db_user: datalakeprod
+          --db_url: "jdbc:postgresql://db-vault-prod.ctcscgdmwqwe.us-west-2.rds.amazonaws.com:5432/vault_file_metadata"
+          --num_partitions: 50
+    triggers:
+      vault-file-service:
+        type: SCHEDULED
+        schedule: 'cron(56 */4 * * ? *)'
+        actions:
+        - job_name: vault-file-service
+        - job_name: vault-file-service-ocr-data
